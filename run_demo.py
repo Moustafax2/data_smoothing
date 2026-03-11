@@ -131,6 +131,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="Future frames available to the fixed-lag adaptive smoother.",
     )
     parser.add_argument(
+        "--adaptive-ema-alpha",
+        type=float,
+        default=0.5,
+        help="EMA alpha used before the adaptive EMA variants.",
+    )
+    parser.add_argument(
         "--output",
         type=Path,
         default=ROOT / "outputs" / "smoothing_comparison.png",
@@ -162,6 +168,7 @@ def main() -> int:
         constant_velocity_process_variance=args.constant_velocity_process_variance,
         constant_velocity_measurement_variance=args.constant_velocity_measurement_variance,
         fixed_lag_frames=args.fixed_lag_frames,
+        adaptive_ema_alpha=args.adaptive_ema_alpha,
         output_path=args.output,
     )
     print(f"Saved plot to {output_path}")
