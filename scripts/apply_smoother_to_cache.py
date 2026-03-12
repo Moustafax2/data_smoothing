@@ -19,7 +19,6 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output", type=Path, required=True, help="Output smoothed JSONL path.")
     parser.add_argument("--method", type=str, default="fixed_lag_adaptive", help="Smoother name from registry.")
     parser.add_argument("--fixed-lag-frames", type=int, default=4, help="Lag for fixed-lag smoothers.")
-    parser.add_argument("--adaptive-ema-alpha", type=float, default=0.5, help="EMA alpha for adaptive EMA variants.")
     return parser
 
 
@@ -29,7 +28,6 @@ def main() -> int:
 
     smoothers = available_smoothers(
         fixed_lag_frames=args.fixed_lag_frames,
-        adaptive_ema_alpha=args.adaptive_ema_alpha,
     )
     try:
         smoother = smoothers[args.method]

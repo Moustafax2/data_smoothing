@@ -1,0 +1,6 @@
+Eligible tracks: 33
+1. savgol: score=2.644, jitter=2.200, deviation=4.654, roughness=0.125, ms_per_frame=0.0209
+2. cv_kalman: score=3.387, jitter=2.936, deviation=5.396, roughness=0.887, ms_per_frame=0.3763
+3. alpha_beta: score=4.469, jitter=2.605, deviation=8.993, roughness=0.744, ms_per_frame=0.0193
+4. fixed_lag_adaptive: score=4.652, jitter=2.991, deviation=9.129, roughness=0.557, ms_per_frame=0.5533
+5. hybrid_realtime: score=4.720, jitter=3.043, deviation=9.113, roughness=0.806, ms_per_frame=1.1137

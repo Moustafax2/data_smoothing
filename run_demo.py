@@ -35,12 +35,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Specific track id from the cache. Defaults to the most frequent track.",
     )
     parser.add_argument(
-        "--alpha",
-        type=float,
-        default=0.2,
-        help="EMA smoothing factor in the range (0, 1].",
-    )
-    parser.add_argument(
         "--noise-std",
         type=float,
         default=4.5,
@@ -65,30 +59,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Savitzky-Golay polynomial order.",
     )
     parser.add_argument(
-        "--one-euro-min-cutoff",
-        type=float,
-        default=0.35,
-        help="One Euro minimum cutoff.",
-    )
-    parser.add_argument(
-        "--one-euro-beta",
-        type=float,
-        default=0.008,
-        help="One Euro speed coefficient.",
-    )
-    parser.add_argument(
-        "--one-euro-derivative-cutoff",
-        type=float,
-        default=0.6,
-        help="One Euro derivative cutoff.",
-    )
-    parser.add_argument(
-        "--one-euro-frame-rate",
-        type=float,
-        default=30.0,
-        help="One Euro assumed frame rate.",
-    )
-    parser.add_argument(
         "--alpha-beta-alpha",
         type=float,
         default=0.18,
@@ -99,30 +69,6 @@ def build_parser() -> argparse.ArgumentParser:
         type=float,
         default=0.004,
         help="Alpha-beta filter beta gain.",
-    )
-    parser.add_argument(
-        "--pid-kp",
-        type=float,
-        default=0.18,
-        help="PID proportional gain.",
-    )
-    parser.add_argument(
-        "--pid-ki",
-        type=float,
-        default=0.002,
-        help="PID integral gain.",
-    )
-    parser.add_argument(
-        "--pid-kd",
-        type=float,
-        default=0.08,
-        help="PID derivative gain.",
-    )
-    parser.add_argument(
-        "--pid-integral-limit",
-        type=float,
-        default=25.0,
-        help="PID integral clamp.",
     )
     parser.add_argument(
         "--constant-velocity-process-variance",
@@ -143,12 +89,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="Future frames available to the fixed-lag adaptive smoother.",
     )
     parser.add_argument(
-        "--adaptive-ema-alpha",
-        type=float,
-        default=0.5,
-        help="EMA alpha used before the adaptive EMA variants.",
-    )
-    parser.add_argument(
         "--output",
         type=Path,
         default=ROOT / "outputs" / "smoothing_comparison.png",
@@ -161,23 +101,13 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
     kwargs = dict(
-        alpha=args.alpha,
         savgol_window_length=args.savgol_window_length,
         savgol_polyorder=args.savgol_polyorder,
-        one_euro_min_cutoff=args.one_euro_min_cutoff,
-        one_euro_beta=args.one_euro_beta,
-        one_euro_derivative_cutoff=args.one_euro_derivative_cutoff,
-        one_euro_frame_rate=args.one_euro_frame_rate,
         alpha_beta_alpha=args.alpha_beta_alpha,
         alpha_beta_beta=args.alpha_beta_beta,
-        pid_kp=args.pid_kp,
-        pid_ki=args.pid_ki,
-        pid_kd=args.pid_kd,
-        pid_integral_limit=args.pid_integral_limit,
         constant_velocity_process_variance=args.constant_velocity_process_variance,
         constant_velocity_measurement_variance=args.constant_velocity_measurement_variance,
         fixed_lag_frames=args.fixed_lag_frames,
-        adaptive_ema_alpha=args.adaptive_ema_alpha,
         output_path=args.output,
     )
     if args.input_cache is not None:
