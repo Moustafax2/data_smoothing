@@ -23,10 +23,32 @@ def available_smoothers(
     constant_velocity_process_variance: float = 1e-2,
     constant_velocity_measurement_variance: float = 20.0,
     fixed_lag_frames: int = 4,
+    adaptive_outlier_window: int = 9,
+    adaptive_outlier_gate: float = 2.5,
+    adaptive_process_variance: float = 0.16,
+    adaptive_measurement_variance: float = 12.0,
+    adaptive_base_smoothing: float = 0.84,
+    adaptive_min_smoothing: float = 0.66,
+    adaptive_max_smoothing: float = 0.96,
+    adaptive_turn_responsiveness: float = 0.75,
+    adaptive_turn_velocity_damping: float = 0.35,
+    adaptive_acceleration_responsiveness: float = 0.10,
+    adaptive_skip_update_gate: float = 8.0,
 ) -> dict[str, SmootherInterface]:
     """Build the smoother registry."""
-    adaptive_process_variance = max(7e-2, constant_velocity_process_variance)
-    adaptive_measurement_variance = min(18.0, constant_velocity_measurement_variance)
+    adaptive_kwargs = {
+        "outlier_window": adaptive_outlier_window,
+        "outlier_gate": adaptive_outlier_gate,
+        "process_variance": adaptive_process_variance,
+        "measurement_variance": adaptive_measurement_variance,
+        "base_smoothing": adaptive_base_smoothing,
+        "min_smoothing": adaptive_min_smoothing,
+        "max_smoothing": adaptive_max_smoothing,
+        "turn_responsiveness": adaptive_turn_responsiveness,
+        "turn_velocity_damping": adaptive_turn_velocity_damping,
+        "acceleration_responsiveness": adaptive_acceleration_responsiveness,
+        "skip_update_gate": adaptive_skip_update_gate,
+    }
     return {
         "savgol": SavitzkyGolaySmoother(window_length=savgol_window_length, polyorder=savgol_polyorder),
         "alpha_beta": AlphaBetaSmoother(alpha=alpha_beta_alpha, beta=alpha_beta_beta),
@@ -34,14 +56,11 @@ def available_smoothers(
             process_variance=constant_velocity_process_variance,
             measurement_variance=constant_velocity_measurement_variance,
         ),
-        "hybrid_realtime": AdaptiveRealtimeSmoother(
-            process_variance=adaptive_process_variance,
-            measurement_variance=adaptive_measurement_variance,
-            base_smoothing=0.68,
-        ),
+        "hybrid_realtime": AdaptiveRealtimeSmoother(**adaptive_kwargs),
         "fixed_lag_adaptive": FixedLagAdaptiveSmoother(
             lag_frames=fixed_lag_frames,
             polyorder=2,
+            **adaptive_kwargs,
         ),
     }
 

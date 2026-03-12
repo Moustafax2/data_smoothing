@@ -15,6 +15,12 @@ class AdaptiveAxisFilter:
     process_variance: float = 7e-2
     measurement_variance: float = 18.0
     base_smoothing: float = 0.68
+    min_smoothing: float = 0.56
+    max_smoothing: float = 0.92
+    turn_responsiveness: float = 0.45
+    turn_velocity_damping: float = 0.55
+    acceleration_responsiveness: float = 0.18
+    skip_update_gate: float = 7.0
     state: np.ndarray | None = field(default=None, init=False)
     covariance: np.ndarray | None = field(default=None, init=False)
     previous_output: float | None = field(default=None, init=False)
@@ -67,17 +73,39 @@ class AdaptiveAxisFilter:
             innovation_sigma = self.measurement_variance**0.5
 
         predicted_value = float(predicted_state[0, 0])
+        predicted_velocity = float(predicted_state[1, 0])
+        raw_innovation = value - predicted_value
+        turn_strength = 0.0
+        if abs(predicted_velocity) > 0.05 and abs(raw_innovation) > 0.5 * innovation_sigma:
+            if np.sign(raw_innovation) != np.sign(predicted_velocity):
+                turn_strength = min(abs(raw_innovation) / (2.5 * innovation_sigma + 1e-6), 1.0)
+                predicted_state[1, 0] *= max(0.0, 1.0 - self.turn_velocity_damping * turn_strength)
+                predicted_value = float(predicted_state[0, 0])
+
+        recent_acceleration = 0.0
+        if recent_innovations.size >= 2:
+            recent_acceleration = float(abs(recent_innovations[-1] - recent_innovations[-2]))
+        accel_strength = min(recent_acceleration / (2.0 * innovation_sigma + 1e-6), 1.0)
+        dynamic_gate = self.outlier_gate * (1.0 + 0.45 * turn_strength + 0.3 * accel_strength)
         clipped_value = predicted_value + np.clip(
             value - predicted_value,
-            -self.outlier_gate * innovation_sigma,
-            self.outlier_gate * innovation_sigma,
+            -dynamic_gate * innovation_sigma,
+            dynamic_gate * innovation_sigma,
         )
         measurement = np.array([[clipped_value]], dtype=float)
         innovation = measurement - measurement_matrix @ predicted_state
         innovation_scale = abs(float(innovation[0, 0])) / (2.5 * innovation_sigma + 1e-6)
         adaptive_measurement_noise = base_measurement_noise * (1.0 + min(innovation_scale, 6.0))
+        if turn_strength > 0.0:
+            adaptive_measurement_noise *= max(0.35, 1.0 - self.turn_responsiveness * turn_strength)
+        if accel_strength > 0.0:
+            adaptive_measurement_noise *= max(0.4, 1.0 - self.acceleration_responsiveness * accel_strength)
 
-        if abs(float(innovation[0, 0])) > 6.5 * innovation_sigma and len(self.history) > self.outlier_window:
+        if (
+            abs(float(innovation[0, 0])) > self.skip_update_gate * innovation_sigma
+            and len(self.history) > self.outlier_window
+            and turn_strength < 0.35
+        ):
             self.state = predicted_state
             self.covariance = predicted_covariance
             estimate = float(self.state[0, 0])
@@ -92,7 +120,8 @@ class AdaptiveAxisFilter:
             estimate = float(self.state[0, 0])
 
         motion_ratio = min(abs(float(self.state[1, 0])) / 4.0, 1.0)
-        smoothing_alpha = min(self.base_smoothing + 0.12 * motion_ratio, 0.9)
+        smoothing_alpha = self.base_smoothing + 0.14 * motion_ratio + 0.18 * turn_strength + 0.08 * accel_strength
+        smoothing_alpha = min(max(smoothing_alpha, self.min_smoothing), self.max_smoothing)
         output = smoothing_alpha * estimate + (1.0 - smoothing_alpha) * self.previous_output
         self.previous_output = output
         self.history.append(value)

@@ -1,0 +1,271 @@
+{
+  "cache_path": "artifacts\\raw_tracks.jsonl",
+  "track_count": 14,
+  "track_ids": [
+    5,
+    32,
+    2,
+    144,
+    163,
+    106,
+    149,
+    127,
+    1,
+    158,
+    108,
+    3,
+    222,
+    6
+  ],
+  "fixed_lag_frames": 4,
+  "baseline": {
+    "hybrid_realtime": 3.947403623379633,
+    "fixed_lag_adaptive": 3.8707866836286584,
+    "cv_kalman_baseline": 4.165875630125962,
+    "combined_score": 3.907562814709126
+  },
+  "best": {
+    "label": "trial_8",
+    "params": {
+      "outlier_window": 9,
+      "outlier_gate": 2.5,
+      "process_variance": 0.16,
+      "measurement_variance": 12.0,
+      "base_smoothing": 0.84,
+      "min_smoothing": 0.66,
+      "max_smoothing": 0.96,
+      "turn_responsiveness": 0.75,
+      "turn_velocity_damping": 0.35,
+      "acceleration_responsiveness": 0.1,
+      "skip_update_gate": 8.0
+    },
+    "metrics": {
+      "hybrid_realtime": 3.679142250360272,
+      "fixed_lag_adaptive": 3.578619444690318,
+      "cv_kalman_baseline": 4.165875630125962,
+      "combined_score": 3.626870391411896
+    }
+  },
+  "top_trials": [
+    {
+      "label": "trial_8",
+      "params": {
+        "outlier_window": 9,
+        "outlier_gate": 2.5,
+        "process_variance": 0.16,
+        "measurement_variance": 12.0,
+        "base_smoothing": 0.84,
+        "min_smoothing": 0.66,
+        "max_smoothing": 0.96,
+        "turn_responsiveness": 0.75,
+        "turn_velocity_damping": 0.35,
+        "acceleration_responsiveness": 0.1,
+        "skip_update_gate": 8.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.679142250360272,
+        "fixed_lag_adaptive": 3.578619444690318,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.626870391411896
+      }
+    },
+    {
+      "label": "trial_50",
+      "params": {
+        "outlier_window": 9,
+        "outlier_gate": 3.1,
+        "process_variance": 0.16,
+        "measurement_variance": 10.0,
+        "base_smoothing": 0.68,
+        "min_smoothing": 0.66,
+        "max_smoothing": 0.96,
+        "turn_responsiveness": 0.45,
+        "turn_velocity_damping": 0.35,
+        "acceleration_responsiveness": 0.18,
+        "skip_update_gate": 6.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.684399290358221,
+        "fixed_lag_adaptive": 3.5910019493668663,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.6358326730427164
+      }
+    },
+    {
+      "label": "trial_28",
+      "params": {
+        "outlier_window": 11,
+        "outlier_gate": 3.1,
+        "process_variance": 0.12,
+        "measurement_variance": 14.0,
+        "base_smoothing": 0.84,
+        "min_smoothing": 0.58,
+        "max_smoothing": 0.96,
+        "turn_responsiveness": 0.45,
+        "turn_velocity_damping": 0.35,
+        "acceleration_responsiveness": 0.34,
+        "skip_update_gate": 7.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.6810924769921036,
+        "fixed_lag_adaptive": 3.5989330128767185,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.6383695556521034
+      }
+    },
+    {
+      "label": "trial_36",
+      "params": {
+        "outlier_window": 9,
+        "outlier_gate": 3.1,
+        "process_variance": 0.12,
+        "measurement_variance": 12.0,
+        "base_smoothing": 0.84,
+        "min_smoothing": 0.54,
+        "max_smoothing": 0.88,
+        "turn_responsiveness": 0.45,
+        "turn_velocity_damping": 0.35,
+        "acceleration_responsiveness": 0.1,
+        "skip_update_gate": 8.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.6949592234148794,
+        "fixed_lag_adaptive": 3.6163320991465335,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.6540731187953392
+      }
+    },
+    {
+      "label": "trial_53",
+      "params": {
+        "outlier_window": 9,
+        "outlier_gate": 2.2,
+        "process_variance": 0.16,
+        "measurement_variance": 10.0,
+        "base_smoothing": 0.72,
+        "min_smoothing": 0.66,
+        "max_smoothing": 0.94,
+        "turn_responsiveness": 0.75,
+        "turn_velocity_damping": 0.35,
+        "acceleration_responsiveness": 0.34,
+        "skip_update_gate": 8.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.725436055696265,
+        "fixed_lag_adaptive": 3.6251495558589766,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.673287075780875
+      }
+    },
+    {
+      "label": "trial_24",
+      "params": {
+        "outlier_window": 7,
+        "outlier_gate": 2.8,
+        "process_variance": 0.16,
+        "measurement_variance": 12.0,
+        "base_smoothing": 0.68,
+        "min_smoothing": 0.66,
+        "max_smoothing": 0.94,
+        "turn_responsiveness": 0.75,
+        "turn_velocity_damping": 0.35,
+        "acceleration_responsiveness": 0.18,
+        "skip_update_gate": 7.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.7266094784391046,
+        "fixed_lag_adaptive": 3.630660449827897,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.6767159835612766
+      }
+    },
+    {
+      "label": "trial_23",
+      "params": {
+        "outlier_window": 11,
+        "outlier_gate": 3.1,
+        "process_variance": 0.12,
+        "measurement_variance": 8.0,
+        "base_smoothing": 0.8,
+        "min_smoothing": 0.62,
+        "max_smoothing": 0.88,
+        "turn_responsiveness": 0.3,
+        "turn_velocity_damping": 0.8,
+        "acceleration_responsiveness": 0.18,
+        "skip_update_gate": 9.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.7415001924363627,
+        "fixed_lag_adaptive": 3.645427866129736,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.6915425827569166
+      }
+    },
+    {
+      "label": "trial_27",
+      "params": {
+        "outlier_window": 7,
+        "outlier_gate": 2.5,
+        "process_variance": 0.12,
+        "measurement_variance": 10.0,
+        "base_smoothing": 0.84,
+        "min_smoothing": 0.62,
+        "max_smoothing": 0.92,
+        "turn_responsiveness": 0.75,
+        "turn_velocity_damping": 0.5,
+        "acceleration_responsiveness": 0.1,
+        "skip_update_gate": 8.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.7514399657305746,
+        "fixed_lag_adaptive": 3.6529861620314685,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.7002439878070392
+      }
+    },
+    {
+      "label": "trial_10",
+      "params": {
+        "outlier_window": 9,
+        "outlier_gate": 2.2,
+        "process_variance": 0.12,
+        "measurement_variance": 8.0,
+        "base_smoothing": 0.8,
+        "min_smoothing": 0.54,
+        "max_smoothing": 0.9,
+        "turn_responsiveness": 0.6,
+        "turn_velocity_damping": 0.5,
+        "acceleration_responsiveness": 0.18,
+        "skip_update_gate": 9.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.75297831654469,
+        "fixed_lag_adaptive": 3.6588626508939153,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.704038170406287
+      }
+    },
+    {
+      "label": "trial_45",
+      "params": {
+        "outlier_window": 11,
+        "outlier_gate": 3.1,
+        "process_variance": 0.16,
+        "measurement_variance": 12.0,
+        "base_smoothing": 0.84,
+        "min_smoothing": 0.58,
+        "max_smoothing": 0.92,
+        "turn_responsiveness": 0.3,
+        "turn_velocity_damping": 0.8,
+        "acceleration_responsiveness": 0.18,
+        "skip_update_gate": 7.0
+      },
+      "metrics": {
+        "hybrid_realtime": 3.755053314832569,
+        "fixed_lag_adaptive": 3.659262621229921,
+        "cv_kalman_baseline": 4.165875630125962,
+        "combined_score": 3.7052421541591922
+      }
+    }
+  ]
+}
