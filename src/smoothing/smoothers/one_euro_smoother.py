@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from smoothing.interface import SmootherInterface
+from smoothing.tracked_base import TrackedPointSmoother
 
 
 @dataclass
@@ -18,11 +18,6 @@ class _OneEuroAxis:
     previous_value: float | None = None
     previous_derivative: float = 0.0
     previous_output: float | None = None
-
-    def reset(self) -> None:
-        self.previous_value = None
-        self.previous_derivative = 0.0
-        self.previous_output = None
 
     def _alpha(self, cutoff: float) -> float:
         dt = 1.0 / self.frame_rate
@@ -48,7 +43,7 @@ class _OneEuroAxis:
         return output
 
 
-class OneEuroSmoother(SmootherInterface):
+class OneEuroSmoother(TrackedPointSmoother):
     name = "one_euro"
 
     def __init__(
@@ -66,13 +61,16 @@ class OneEuroSmoother(SmootherInterface):
             raise ValueError("One Euro derivative_cutoff must be > 0.")
         if frame_rate <= 0.0:
             raise ValueError("One Euro frame_rate must be > 0.")
+        super().__init__()
+        self.min_cutoff = min_cutoff
+        self.beta = beta
+        self.derivative_cutoff = derivative_cutoff
+        self.frame_rate = frame_rate
 
-        self.x_axis = _OneEuroAxis(min_cutoff, beta, derivative_cutoff, frame_rate)
-        self.y_axis = _OneEuroAxis(min_cutoff, beta, derivative_cutoff, frame_rate)
-
-    def reset(self) -> None:
-        self.x_axis.reset()
-        self.y_axis.reset()
-
-    def smooth_points(self, x: float, y: float) -> tuple[float, float]:
-        return self.x_axis.update(x), self.y_axis.update(y)
+    def _create_axis_smoother(self) -> _OneEuroAxis:
+        return _OneEuroAxis(
+            min_cutoff=self.min_cutoff,
+            beta=self.beta,
+            derivative_cutoff=self.derivative_cutoff,
+            frame_rate=self.frame_rate,
+        )

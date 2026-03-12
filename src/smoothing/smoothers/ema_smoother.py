@@ -2,29 +2,32 @@
 
 from __future__ import annotations
 
-from smoothing.interface import SmootherInterface
+from dataclasses import dataclass
+
+from smoothing.tracked_base import TrackedPointSmoother
 
 
-class EmaSmoother(SmootherInterface):
+@dataclass
+class _EmaAxis:
+    alpha: float
+    value: float | None = None
+
+    def update(self, point: float) -> float:
+        if self.value is None:
+            self.value = point
+            return point
+        self.value = self.alpha * point + (1.0 - self.alpha) * self.value
+        return self.value
+
+
+class EmaSmoother(TrackedPointSmoother):
     name = "ema"
 
     def __init__(self, alpha: float = 0.2) -> None:
         if not 0.0 < alpha <= 1.0:
             raise ValueError("EMA alpha must be in the range (0, 1].")
+        super().__init__()
         self.alpha = alpha
-        self._x: float | None = None
-        self._y: float | None = None
 
-    def reset(self) -> None:
-        self._x = None
-        self._y = None
-
-    def smooth_points(self, x: float, y: float) -> tuple[float, float]:
-        if self._x is None or self._y is None:
-            self._x = x
-            self._y = y
-            return x, y
-
-        self._x = self.alpha * x + (1.0 - self.alpha) * self._x
-        self._y = self.alpha * y + (1.0 - self.alpha) * self._y
-        return self._x, self._y
+    def _create_axis_smoother(self) -> _EmaAxis:
+        return _EmaAxis(alpha=self.alpha)

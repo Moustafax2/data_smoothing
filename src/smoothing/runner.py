@@ -12,8 +12,8 @@ from smoothing.interface import SmootherInterface
 
 @dataclass(frozen=True)
 class SmootherRunResult:
-    x_values: np.ndarray
-    y_values: np.ndarray
+    top_points: np.ndarray
+    bottom_points: np.ndarray
     elapsed_ms: float
     ms_per_frame: float
 
@@ -33,11 +33,11 @@ def benchmark_smoothers(
 
     for name, smoother in smoothers.items():
         start = perf_counter()
-        smooth_x, smooth_y = smoother.smooth_sequence(x_data, y_data)
+        smooth_top, smooth_bottom = smoother.smooth_sequence(x_data, y_data)
         elapsed_ms = (perf_counter() - start) * 1000.0
         results[name] = SmootherRunResult(
-            x_values=smooth_x,
-            y_values=smooth_y,
+            top_points=smooth_top,
+            bottom_points=smooth_bottom,
             elapsed_ms=elapsed_ms,
             ms_per_frame=elapsed_ms / max(len(x_data), 1),
         )

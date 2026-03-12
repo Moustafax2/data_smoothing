@@ -6,7 +6,7 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from smoothing.interface import SmootherInterface
+from smoothing.tracked_base import TrackedPointSmoother
 
 
 @dataclass
@@ -19,11 +19,6 @@ class _PidAxis:
     output: float | None = None
     integral: float = 0.0
     previous_error: float = 0.0
-
-    def reset(self) -> None:
-        self.output = None
-        self.integral = 0.0
-        self.previous_error = 0.0
 
     def update(self, value: float) -> float:
         if self.output is None:
@@ -39,7 +34,7 @@ class _PidAxis:
         return self.output
 
 
-class PidSmoother(SmootherInterface):
+class PidSmoother(TrackedPointSmoother):
     name = "pid"
 
     def __init__(
@@ -56,12 +51,18 @@ class PidSmoother(SmootherInterface):
             raise ValueError("PID integral_limit must be > 0.")
         if dt <= 0.0:
             raise ValueError("PID dt must be > 0.")
-        self.x_axis = _PidAxis(kp, ki, kd, integral_limit, dt)
-        self.y_axis = _PidAxis(kp, ki, kd, integral_limit, dt)
+        super().__init__()
+        self.kp = kp
+        self.ki = ki
+        self.kd = kd
+        self.integral_limit = integral_limit
+        self.dt = dt
 
-    def reset(self) -> None:
-        self.x_axis.reset()
-        self.y_axis.reset()
-
-    def smooth_points(self, x: float, y: float) -> tuple[float, float]:
-        return self.x_axis.update(x), self.y_axis.update(y)
+    def _create_axis_smoother(self) -> _PidAxis:
+        return _PidAxis(
+            kp=self.kp,
+            ki=self.ki,
+            kd=self.kd,
+            integral_limit=self.integral_limit,
+            dt=self.dt,
+        )

@@ -99,11 +99,11 @@ def smooth_series(values: np.ndarray, method: str = "ema", **kwargs: float) -> n
     except KeyError as exc:
         available = ", ".join(sorted(registry))
         raise ValueError(f"Unknown smoothing method '{method}'. Available: {available}") from exc
-    smooth_x, _ = smoother.smooth_sequence(x_values, np.zeros_like(x_values, dtype=float))
-    return smooth_x
+    _, smooth_bottom = smoother.smooth_sequence(x_values, np.zeros_like(x_values, dtype=float))
+    return smooth_bottom[:, 0]
 
 
 def smooth_all_series(values: np.ndarray, **kwargs: float) -> dict[str, np.ndarray]:
     """Compatibility helper for running every smoother on one x-series."""
     results = benchmark_smoothers(available_smoothers(**kwargs), np.asarray(values, dtype=float))
-    return {name: result.x_values for name, result in results.items()}
+    return {name: result.bottom_points[:, 0] for name, result in results.items()}

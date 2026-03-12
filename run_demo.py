@@ -9,7 +9,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from smoothing.visualize import run_demo
+from smoothing.visualize import run_cache_demo, run_demo
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -21,6 +21,18 @@ def build_parser() -> argparse.ArgumentParser:
         type=int,
         default=500,
         help="Number of synthetic points to generate.",
+    )
+    parser.add_argument(
+        "--input-cache",
+        type=Path,
+        default=None,
+        help="Optional raw tracking JSONL cache to visualize instead of synthetic data.",
+    )
+    parser.add_argument(
+        "--track-id",
+        type=int,
+        default=None,
+        help="Specific track id from the cache. Defaults to the most frequent track.",
     )
     parser.add_argument(
         "--alpha",
@@ -148,11 +160,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
-    output_path = run_demo(
-        num_points=args.num_points,
+    kwargs = dict(
         alpha=args.alpha,
-        noise_std=args.noise_std,
-        seed=args.seed,
         savgol_window_length=args.savgol_window_length,
         savgol_polyorder=args.savgol_polyorder,
         one_euro_min_cutoff=args.one_euro_min_cutoff,
@@ -171,6 +180,19 @@ def main() -> int:
         adaptive_ema_alpha=args.adaptive_ema_alpha,
         output_path=args.output,
     )
+    if args.input_cache is not None:
+        output_path = run_cache_demo(
+            cache_path=args.input_cache,
+            track_id=args.track_id,
+            **kwargs,
+        )
+    else:
+        output_path = run_demo(
+            num_points=args.num_points,
+            noise_std=args.noise_std,
+            seed=args.seed,
+            **kwargs,
+        )
     print(f"Saved plot to {output_path}")
     return 0
 

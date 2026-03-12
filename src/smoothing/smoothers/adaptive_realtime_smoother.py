@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from smoothing.interface import SmootherInterface
 from smoothing.smoothers._adaptive_common import AdaptiveAxisFilter
+from smoothing.tracked_base import TrackedPointSmoother
 
 
-class AdaptiveRealtimeSmoother(SmootherInterface):
+class AdaptiveRealtimeSmoother(TrackedPointSmoother):
     name = "hybrid_realtime"
 
     def __init__(
@@ -27,25 +27,18 @@ class AdaptiveRealtimeSmoother(SmootherInterface):
             raise ValueError("Adaptive measurement_variance must be > 0.")
         if not 0.0 < base_smoothing < 1.0:
             raise ValueError("Adaptive base_smoothing must be in the range (0, 1).")
+        super().__init__()
+        self.outlier_window = outlier_window
+        self.outlier_gate = outlier_gate
+        self.process_variance = process_variance
+        self.measurement_variance = measurement_variance
+        self.base_smoothing = base_smoothing
 
-        self.x_axis = AdaptiveAxisFilter(
-            outlier_window=outlier_window,
-            outlier_gate=outlier_gate,
-            process_variance=process_variance,
-            measurement_variance=measurement_variance,
-            base_smoothing=base_smoothing,
+    def _create_axis_smoother(self) -> AdaptiveAxisFilter:
+        return AdaptiveAxisFilter(
+            outlier_window=self.outlier_window,
+            outlier_gate=self.outlier_gate,
+            process_variance=self.process_variance,
+            measurement_variance=self.measurement_variance,
+            base_smoothing=self.base_smoothing,
         )
-        self.y_axis = AdaptiveAxisFilter(
-            outlier_window=outlier_window,
-            outlier_gate=outlier_gate,
-            process_variance=process_variance,
-            measurement_variance=measurement_variance,
-            base_smoothing=base_smoothing,
-        )
-
-    def reset(self) -> None:
-        self.x_axis.reset()
-        self.y_axis.reset()
-
-    def smooth_points(self, x: float, y: float) -> tuple[float, float]:
-        return self.x_axis.update(x), self.y_axis.update(y)

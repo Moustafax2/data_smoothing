@@ -19,12 +19,14 @@ class AdaptiveAxisFilter:
     covariance: np.ndarray | None = field(default=None, init=False)
     previous_output: float | None = field(default=None, init=False)
     history: list[float] = field(default_factory=list, init=False)
+    innovation_history: list[float] = field(default_factory=list, init=False)
 
     def reset(self) -> None:
         self.state = None
         self.covariance = None
         self.previous_output = None
         self.history.clear()
+        self.innovation_history.clear()
 
     def update(self, value: float) -> float:
         if self.state is None:
@@ -51,25 +53,31 @@ class AdaptiveAxisFilter:
         predicted_covariance = transition @ self.covariance @ transition.T + process_noise
 
         recent = np.asarray(self.history[-self.outlier_window :], dtype=float)
-        if recent.size == 0:
-            median = self.history[-1]
-            sigma = self.measurement_variance**0.5
+        recent_innovations = np.asarray(self.innovation_history[-self.outlier_window :], dtype=float)
+        if recent_innovations.size > 0:
+            innovation_median = float(np.median(recent_innovations))
+            innovation_mad = float(np.median(np.abs(recent_innovations - innovation_median)))
+            innovation_sigma = 1.4826 * innovation_mad + 1e-6
+        elif recent.size > 1:
+            diffs = np.diff(recent)
+            diff_median = float(np.median(diffs))
+            diff_mad = float(np.median(np.abs(diffs - diff_median)))
+            innovation_sigma = max(1.4826 * diff_mad, self.measurement_variance**0.5 * 0.35) + 1e-6
         else:
-            median = float(np.median(recent))
-            mad = float(np.median(np.abs(recent - median)))
-            sigma = 1.4826 * mad + 1e-6
+            innovation_sigma = self.measurement_variance**0.5
 
-        clipped_value = median + np.clip(
-            value - median,
-            -self.outlier_gate * sigma,
-            self.outlier_gate * sigma,
+        predicted_value = float(predicted_state[0, 0])
+        clipped_value = predicted_value + np.clip(
+            value - predicted_value,
+            -self.outlier_gate * innovation_sigma,
+            self.outlier_gate * innovation_sigma,
         )
         measurement = np.array([[clipped_value]], dtype=float)
         innovation = measurement - measurement_matrix @ predicted_state
-        innovation_scale = abs(float(innovation[0, 0])) / (2.5 * sigma + 1e-6)
+        innovation_scale = abs(float(innovation[0, 0])) / (2.5 * innovation_sigma + 1e-6)
         adaptive_measurement_noise = base_measurement_noise * (1.0 + min(innovation_scale, 6.0))
 
-        if abs(float(innovation[0, 0])) > 6.5 * sigma and len(self.history) > self.outlier_window:
+        if abs(float(innovation[0, 0])) > 6.5 * innovation_sigma and len(self.history) > self.outlier_window:
             self.state = predicted_state
             self.covariance = predicted_covariance
             estimate = float(self.state[0, 0])
@@ -88,6 +96,7 @@ class AdaptiveAxisFilter:
         output = smoothing_alpha * estimate + (1.0 - smoothing_alpha) * self.previous_output
         self.previous_output = output
         self.history.append(value)
+        self.innovation_history.append(float(value - predicted_value))
         return output
 
 

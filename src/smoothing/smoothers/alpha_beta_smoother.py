@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from smoothing.interface import SmootherInterface
+from smoothing.tracked_base import TrackedPointSmoother
 
 
 @dataclass
@@ -14,10 +14,6 @@ class _AlphaBetaAxis:
     dt: float
     position: float | None = None
     velocity: float = 0.0
-
-    def reset(self) -> None:
-        self.position = None
-        self.velocity = 0.0
 
     def update(self, value: float) -> float:
         if self.position is None:
@@ -31,7 +27,7 @@ class _AlphaBetaAxis:
         return self.position
 
 
-class AlphaBetaSmoother(SmootherInterface):
+class AlphaBetaSmoother(TrackedPointSmoother):
     name = "alpha_beta"
 
     def __init__(self, alpha: float = 0.18, beta: float = 0.004, dt: float = 1.0) -> None:
@@ -41,12 +37,10 @@ class AlphaBetaSmoother(SmootherInterface):
             raise ValueError("Alpha-beta beta must be >= 0.")
         if dt <= 0.0:
             raise ValueError("Alpha-beta dt must be > 0.")
-        self.x_axis = _AlphaBetaAxis(alpha, beta, dt)
-        self.y_axis = _AlphaBetaAxis(alpha, beta, dt)
+        super().__init__()
+        self.alpha = alpha
+        self.beta = beta
+        self.dt = dt
 
-    def reset(self) -> None:
-        self.x_axis.reset()
-        self.y_axis.reset()
-
-    def smooth_points(self, x: float, y: float) -> tuple[float, float]:
-        return self.x_axis.update(x), self.y_axis.update(y)
+    def _create_axis_smoother(self) -> _AlphaBetaAxis:
+        return _AlphaBetaAxis(alpha=self.alpha, beta=self.beta, dt=self.dt)

@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-from smoothing.interface import SmootherInterface
+from smoothing.tracked_base import TrackedPointSmoother
 
 
 @dataclass
@@ -16,10 +16,6 @@ class _ConstantVelocityAxis:
     dt: float
     state: np.ndarray | None = field(default=None, init=False)
     covariance: np.ndarray | None = field(default=None, init=False)
-
-    def reset(self) -> None:
-        self.state = None
-        self.covariance = None
 
     def update(self, value: float) -> float:
         if self.state is None:
@@ -50,7 +46,7 @@ class _ConstantVelocityAxis:
         return float(self.state[0, 0])
 
 
-class ConstantVelocityKalmanSmoother(SmootherInterface):
+class ConstantVelocityKalmanSmoother(TrackedPointSmoother):
     name = "cv_kalman"
 
     def __init__(self, process_variance: float = 1e-2, measurement_variance: float = 20.0, dt: float = 1.0):
@@ -60,12 +56,14 @@ class ConstantVelocityKalmanSmoother(SmootherInterface):
             raise ValueError("Constant-velocity Kalman measurement_variance must be > 0.")
         if dt <= 0.0:
             raise ValueError("Constant-velocity Kalman dt must be > 0.")
-        self.x_axis = _ConstantVelocityAxis(process_variance, measurement_variance, dt)
-        self.y_axis = _ConstantVelocityAxis(process_variance, measurement_variance, dt)
+        super().__init__()
+        self.process_variance = process_variance
+        self.measurement_variance = measurement_variance
+        self.dt = dt
 
-    def reset(self) -> None:
-        self.x_axis.reset()
-        self.y_axis.reset()
-
-    def smooth_points(self, x: float, y: float) -> tuple[float, float]:
-        return self.x_axis.update(x), self.y_axis.update(y)
+    def _create_axis_smoother(self) -> _ConstantVelocityAxis:
+        return _ConstantVelocityAxis(
+            process_variance=self.process_variance,
+            measurement_variance=self.measurement_variance,
+            dt=self.dt,
+        )
